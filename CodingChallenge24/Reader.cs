@@ -47,6 +47,7 @@ public class Cell
 {
     public int X { get; set; }
     public int Y { get; set; }
+    public bool IsGolden { get; set; }
 }
 
 public class GoldenPoint : Cell

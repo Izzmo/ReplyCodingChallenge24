@@ -18,6 +18,10 @@ foreach (var file in Paths.EnumerateInputs(inputFolder))
 
     var solver = new Solver1();
     var shortesPath = solver.FindShortestPath(model);
+    foreach (var cell in shortesPath)
+    {
+        Console.WriteLine($"Cell at ({cell.X}, {cell.Y})");
+    }
     //Solver.Solve(model);
 
     Console.ForegroundColor = ConsoleColor.Red;

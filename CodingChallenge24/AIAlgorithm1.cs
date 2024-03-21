@@ -24,7 +24,7 @@
 
         foreach (var start in goldenPoints)
         {
-            var path = new List<Cell> { start };
+            var path = new List<Cell> { };
             var remainingPoints = new List<Cell>(goldenPoints);
             remainingPoints.Remove(start);
 
@@ -36,31 +36,32 @@
 
     private void FindShortestPath(Cell current, List<Cell> remainingPoints, List<Cell> path, double currentDistance, List<Cell> shortestPath, double shortestDistance)
     {
-        if (remainingPoints.Count == 0)
-        {
-            return;
-            //if (currentDistance < shortestDistance)
-            //{
-            //    shortestDistance = currentDistance;
-            //    shortestPath = new List<Cell>(path);
-            //}
-        }
-
         foreach (var next in remainingPoints)
         {
-            var distance = GetDistance(current, next);
-            path.Add(next);
-            var newRemainingPoints = new List<Cell>(remainingPoints);
-            newRemainingPoints.Remove(next);
+            var vector = GetVector(current, next);
+            //horizontal cells
+            var endingx = 0;
+            for (int x = 1; x <= vector.X; x++)
+            {
+                var next2 = new Cell { X = current.X + x, Y = current.Y };
+                path.Add(next2);
+                endingx = next2.X;
+            }
+            //vertical cells 
+            for (int y = 1; y < Math.Abs(vector.Y); y++)
+            {
+                var sign = vector.Y > 0 ? 1 : -1;
+                var next2 = new Cell { X = endingx, Y = current.Y + (y*sign) };
+                path.Add(next2);
+            }
 
-            FindShortestPath(next, newRemainingPoints, path, currentDistance + distance, shortestPath, shortestDistance);
-
-            path.Remove(next);
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(path));
         }
     }
 
-    private double GetDistance(Cell a, Cell b)
+    private (int X, int Y) GetVector(Cell a, Cell b)
     {
-        return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+        // generate an algorithm to determine the difference in the X and Y attributes of Cell a and Cell b
+        return (b.X - a.X, b.Y - a.Y);
     }
 }
