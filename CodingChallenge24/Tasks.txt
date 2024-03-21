@@ -1,0 +1,5 @@
+﻿define internal representation of tiles
+define internal representation of grid
+detect golden and silver tiles
+find distance between tiles x rows, y columns
+place the available connection tiles
