@@ -44,7 +44,20 @@
             for (int x = 1; x <= vector.X; x++)
             {
                 var next2 = new Cell { X = current.X + x, Y = current.Y };
-                path.Add(next2);
+                bool found = false;
+                path.ForEach(p =>
+                {
+                    if (p.X == next2.X && p.Y == next2.Y)
+                    {
+                        found = true;
+                    }
+                });
+
+                if (!found)
+                {
+                    path.Add(next2);
+                }
+
                 endingx = next2.X;
             }
             //vertical cells 
@@ -52,7 +65,19 @@
             {
                 var sign = vector.Y > 0 ? 1 : -1;
                 var next2 = new Cell { X = endingx, Y = current.Y + (y*sign) };
-                path.Add(next2);
+                bool found = false;
+                path.ForEach(p =>
+                {
+                    if (p.X == next2.X && p.Y == next2.Y)
+                    {
+                        found = true;
+                    }
+                });
+
+                if (!found)
+                {
+                    path.Add(next2);
+                }
             }
 
             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(path));
@@ -64,4 +89,6 @@
         // generate an algorithm to determine the difference in the X and Y attributes of Cell a and Cell b
         return (b.X - a.X, b.Y - a.Y);
     }
+
+
 }
