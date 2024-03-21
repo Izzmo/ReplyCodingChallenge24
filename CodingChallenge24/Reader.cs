@@ -21,14 +21,14 @@
         for (var i = index; i <= model.GoldenPointsAvailable; i++)
         {
             var values = allLines[i].Split(" ");
-            model.GoldenPoints.Add(new GoldenPoint { x = int.Parse(values[0]), y = int.Parse(values[1]) });
+            model.GoldenPoints.Add(new GoldenPoint { X = int.Parse(values[0]), Y = int.Parse(values[1]) });
             index++;
         }
         
         for (var i = index; i <= model.SilverPointsAvailable; i++)
         {
             var values = allLines[i].Split(" ");
-            model.SilverPoints.Add(new SilverPoint { x = int.Parse(values[0]), y = int.Parse(values[1]), score = int.Parse(values[2]) });
+            model.SilverPoints.Add(new SilverPoint { X = int.Parse(values[0]), Y = int.Parse(values[1]), score = int.Parse(values[2]) });
             index++;
         }
 
@@ -43,22 +43,18 @@
     }
 }
 
-public struct Point
+public class Cell
 {
-    public int x { get; set; }
-    public int y { get; set; }
+    public int X { get; set; }
+    public int Y { get; set; }
 }
 
-public struct GoldenPoint : Point
+public class GoldenPoint : Cell
 {
-    public int x { get; set; }
-    public int y { get; set; }
 }
 
-public struct SilverPoint
+public class SilverPoint : Cell
 {
-    public int x { get; set; }
-    public int y { get; set; }
     public int score { get; set; }
 }
 

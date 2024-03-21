@@ -17,7 +17,7 @@ foreach (var file in Paths.EnumerateInputs(inputFolder))
     var model = Reader.ReadModel(file);
 
     var solver = new Solver1();
-    solver.FindFindShortestPaths(model)
+    var shortesPath = solver.FindShortestPath(model);
     //Solver.Solve(model);
 
     Console.ForegroundColor = ConsoleColor.Red;

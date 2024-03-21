@@ -1,96 +1,66 @@
-﻿public class Cell
-{
-    public int X { get; set; }
-    public int Y { get; set; }
-    public bool IsGolden { get; set; }
-    public bool IsSilver {get; set;}
-}
-
-public class Solver1
+﻿public class Solver1
 {
     public Cell[,] Cells { get; set; }
 
-    public Dictionary<Cell, List<Cell>> FindShortestPaths(Model model)
+    public List<Cell> FindShortestPath(Model model)
     {
-        Cells = new Cell[model.GridWidth, model.GridHeight];
+        int width = model.GridWidth;
+        int height = model.GridHeight;
+        List<GoldenPoint> goldenPoints = model.GoldenPoints;
+
+        Cells = new Cell[width, height];
 
         // Initialize the cells
-        for (int i = 0; i < model.GridWidth; i++)
+        for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < model.GridHeight; j++)
+            for (int j = 0; j < height; j++)
             {
                 Cells[i, j] = new Cell { X = i, Y = j };
             }
         }
 
-        var paths = new Dictionary<Cell, List<Cell>>();
+        List<Cell> shortestPath = null;
+        double shortestDistance = double.MaxValue;
 
-        for (int i = 0; i < model.GoldenPoints.Count; i++)
+        foreach (var start in goldenPoints)
         {
-            for (int j = i + 1; j < model.GoldenPoints.Count; j++)
-            {
-                var path = FindShortestPath(model.GoldenPoints[i], model.GoldenPoints[j]);
-                if (path != null)
-                {
-                    paths.Add(model.GoldenPoints[i], path);
-                }
-            }
+            var path = new List<Cell> { start };
+            var remainingPoints = new List<Cell>(goldenPoints);
+            remainingPoints.Remove(start);
+
+            FindShortestPath(start, remainingPoints, path, 0, shortestPath, shortestDistance);
         }
 
-        return paths;
+        return shortestPath;
     }
 
-    public List<Cell> FindShortestPath(Cell start, Cell end)
+    private void FindShortestPath(Cell current, List<Cell> remainingPoints, List<Cell> path, double currentDistance, List<Cell> shortestPath, double shortestDistance)
     {
-        var visited = new bool[Cells.GetLength(0), Cells.GetLength(1)];
-        var queue = new Queue<Cell>();
-        var path = new Dictionary<Cell, Cell>();
-
-        visited[start.X, start.Y] = true;
-        queue.Enqueue(start);
-
-        while (queue.Count > 0)
+        if (remainingPoints.Count == 0)
         {
-            var cell = queue.Dequeue();
-
-            if (cell.X == end.X && cell.Y == end.Y)
-            {
-                var shortestPath = new List<Cell>();
-                while (cell != null)
-                {
-                    shortestPath.Add(cell);
-                    path.TryGetValue(cell, out cell);
-                }
-                shortestPath.Reverse();
-                return shortestPath;
-            }
-
-            foreach (var neighbour in GetNeighbours(cell))
-            {
-                if (!visited[neighbour.X, neighbour.Y])
-                {
-                    visited[neighbour.X, neighbour.Y] = true;
-                    queue.Enqueue(neighbour);
-                    if (!path.ContainsKey(neighbour))
-                    {
-                        path.Add(neighbour, cell);
-                    }
-                }
-            }
+            return;
+            //if (currentDistance < shortestDistance)
+            //{
+            //    shortestDistance = currentDistance;
+            //    shortestPath = new List<Cell>(path);
+            //}
         }
 
-        return null; // No path found
+        foreach (var next in remainingPoints)
+        {
+            var distance = GetDistance(current, next);
+            path.Add(next);
+            var newRemainingPoints = new List<Cell>(remainingPoints);
+            newRemainingPoints.Remove(next);
+
+            FindShortestPath(next, newRemainingPoints, path, currentDistance + distance, shortestPath, shortestDistance);
+
+            path.Remove(next);
+        }
     }
 
-    private IEnumerable<Cell> GetNeighbours(Cell cell)
+    private double GetDistance(Cell a, Cell b)
     {
-        var neighbours = new List<Cell>();
-
-        if (cell.X > 0) neighbours.Add(Cells[cell.X - 1, cell.Y]);
-        if (cell.Y > 0) neighbours.Add(Cells[cell.X, cell.Y - 1]);
-        if (cell.X < Cells.GetLength(0) - 1) neighbours.Add(Cells[cell.X + 1, cell.Y]);
-        if (cell.Y < Cells.GetLength(1) - 1) neighbours.Add(Cells[cell.X, cell.Y + 1]);
-
-        return neighbours.Where(x => x.IsGolden);
+        return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
     }
 }
