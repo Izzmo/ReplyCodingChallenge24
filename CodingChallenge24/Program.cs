@@ -23,6 +23,7 @@ foreach (var file in Paths.EnumerateInputs(inputFolder))
         Console.WriteLine($"Cell at ({cell.X}, {cell.Y})");
     }
     //Solver.Solve(model);
+    var placedTiles = solver.PlaceTiles(shortesPath, model.FlattenedTiles);
 
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Score: {0}", model.Score);

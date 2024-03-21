@@ -39,6 +39,15 @@
             index++;
         }
 
+        var tilesCount = model.Tiles.Count();
+        for (var i = 0; i < tilesCount; i++)
+        {
+            for (var j = index; j < model.Tiles[i].numAvailableTiles; j++)
+            {
+                model.FlattenedTiles.Add(model.Tiles[i]);
+            }
+        }
+
         return model;
     }
 }

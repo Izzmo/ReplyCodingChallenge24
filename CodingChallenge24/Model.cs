@@ -25,6 +25,7 @@
     public List<GoldenPoint> GoldenPoints { get; set; } = new();
     public List<SilverPoint> SilverPoints { get; set; } = new();
     public List<Tile> Tiles { get; set; } = new();
+    public List<Tile> FlattenedTiles { get; set; } = new();
 
     public double VirtualFieldScore(int index)
     {

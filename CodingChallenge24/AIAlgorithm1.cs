@@ -20,7 +20,6 @@
         }
 
         List<Cell> shortestPath = null;
-        double shortestDistance = double.MaxValue;
 
         foreach (var start in goldenPoints)
         {
@@ -28,20 +27,20 @@
             var remainingPoints = new List<Cell>(goldenPoints);
             remainingPoints.Remove(start);
 
-            FindShortestPath(start, remainingPoints, path, 0, shortestPath, shortestDistance);
+            FindShortestPath(start, remainingPoints, path);
         }
 
         return shortestPath;
     }
 
-    private void FindShortestPath(Cell current, List<Cell> remainingPoints, List<Cell> path, double currentDistance, List<Cell> shortestPath, double shortestDistance)
+    private static void FindShortestPath(Cell current, List<Cell> remainingPoints, List<Cell> path)
     {
         foreach (var next in remainingPoints)
         {
-            var vector = GetVector(current, next);
+            var (X, Y) = GetVector(current, next);
             //horizontal cells
             var endingx = 0;
-            for (int x = 1; x <= vector.X; x++)
+            for (int x = 1; x <= X; x++)
             {
                 var next2 = new Cell { X = current.X + x, Y = current.Y };
                 bool found = false;
@@ -61,9 +60,9 @@
                 endingx = next2.X;
             }
             //vertical cells 
-            for (int y = 1; y < Math.Abs(vector.Y); y++)
+            for (int y = 1; y < Math.Abs(Y); y++)
             {
-                var sign = vector.Y > 0 ? 1 : -1;
+                var sign = Y > 0 ? 1 : -1;
                 var next2 = new Cell { X = endingx, Y = current.Y + (y*sign) };
                 bool found = false;
                 path.ForEach(p =>
@@ -84,11 +83,61 @@
         }
     }
 
-    private (int X, int Y) GetVector(Cell a, Cell b)
+    private static (int X, int Y) GetVector(Cell a, Cell b)
     {
         // generate an algorithm to determine the difference in the X and Y attributes of Cell a and Cell b
         return (b.X - a.X, b.Y - a.Y);
     }
 
+    //public class Tile
+    //{
+    //    public bool ConnectsTop { get; set; }
+    //    public bool ConnectsRight { get; set; }
+    //    public bool ConnectsBottom { get; set; }
+    //    public bool ConnectsLeft { get; set; }
+    //    public int X { get; set; }
+    //    public int Y { get; set; }
+    //    // Add other properties as needed
+    //}
 
+    public List<Tile> PlaceTiles(List<Cell> cells, List<Tile> tiles)
+    {
+        // Initialize the list of placed tiles
+        List<Tile> placedTiles = new List<Tile>();
+
+        // Iterate over the cells
+        foreach (var cell in cells)
+        {
+            // Find a tile that can connect to the current cell's neighbors
+            Tile tile = tiles.Find(t => CanConnect(cells, t, cell.X, cell.Y));
+
+            // If a suitable tile was found
+            //if (tile != null)
+            {
+                // Set the tile's position
+                tile.X = cell.X;
+                tile.Y = cell.Y;
+
+                // Add the tile to the list of placed tiles
+                placedTiles.Add(tile);
+
+                // Remove the tile from the list
+                tiles.Remove(tile);
+            }
+        }
+
+        // Return the list of placed tiles
+        return placedTiles;
+    }
+
+    public bool CanConnect(List<Cell> cells, Tile tile, int x, int y)
+    {
+        // Check if the tile can connect to the cell's neighbors
+        if (cells.Exists(c => c.X == x - 1 && c.Y == y && !tile.ConnectsTop)) return false;
+        if (cells.Exists(c => c.X == x + 1 && c.Y == y && !tile.ConnectsBottom)) return false;
+        if (cells.Exists(c => c.X == x && c.Y == y - 1 && !tile.ConnectsLeft)) return false;
+        if (cells.Exists(c => c.X == x && c.Y == y + 1 && !tile.ConnectsRight)) return false;
+
+        return true;
+    }
 }
